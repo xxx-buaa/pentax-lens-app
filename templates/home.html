@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}宾得镜头指南{% endblock %}
+
+{% block active %}
+<!-- 默认页 - 数据库概览 -->
+<li class="nav-item active">
+    <a class="nav-link" href="home">
+        <!--i class="fas fa-fw fa-tachometer-alt"></i-->
+        <i class="fas fa-chart-area"></i>
+        <span>数据库概览</span></a>
+</li>
+
+<!-- 一条分割线 -->
+<hr class="sidebar-divider">
+
+<!-- 标题 -->
+<div class="sidebar-heading">
+    系统功能
+</div>
+
+<!-- 每日推荐模块 -->
+<li class="nav-item">
+    <a class="nav-link" href="recommend">
+        <i class="fas fa-random"></i>
+        <span>每日推荐</span>
+    </a>
+</li>
+
+<!-- 镜头查询模块 -->
+<li class="nav-item">
+    <a class="nav-link" href="search">
+        <i class="fas fa-search"></i>
+        <span>镜头查询</span>
+    </a>
+</li>
+
+<!-- 一条分割线 -->
+<hr class="sidebar-divider">
+
+<!-- 其他 -->
+<div class="sidebar-heading">
+    其他
+</div>
+
+<!-- 给开发留一个页面 -->
+<li class="nav-item">
+    <a class="nav-link" href="debug">
+        <i class="fas fa-tools debug-icon"></i>
+        <span>页面开发</span>
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- 页面标题 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">宾得镜头数据库概览</h1>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                class="fas fa-download fa-sm text-white-50"></i> 下载概览</a>
+    </div>
+
+    <!-- 内容行 - 小卡片 -->
+    <div class="row">
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm font-weight-bold text-primary text-uppercase mb-1">
+                                总镜头数</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">396</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm font-weight-bold text-success text-uppercase mb-1">
+                                卡口系列</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">13种</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm font-weight-bold text-info text-uppercase mb-1">焦段类型
+                            </div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">6种</div>
+                                </div>
+                                <!--div class="col">
+                                    <div class="progress progress-sm mr-2">
+                                        <div class="progress-bar bg-info" role="progressbar"
+                                            style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                            aria-valuemax="100"></div>
+                                    </div>
+                                </div-->
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 内容行 - 折线图和饼图 -->
+
+    <div class="row">
+
+        <!-- Area Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div
+                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">不同卡口镜头数量</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="myAreaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div
+                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">不同焦段镜头比例</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="myPieChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: #4e73df;"></i> Zoom
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: #1cc88a;"></i> Telephoto
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: #36b9cc;"></i> Wide-Angle
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: #f6c23e;"></i> Normal
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: #e74a3b;"></i> Extreme Wide-Angle
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle" style="color: #858796;"></i> Extreme Telephoto
+                        </span>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

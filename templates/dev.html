@@ -1,0 +1,496 @@
+{% extends "base.html" %}
+
+{% block title %}开发页{% endblock %}
+
+{% block headScript %}
+<script src="../static/js/echarts.min.js"></script>
+<style>
+    #cy {
+        width: 100%;
+        height: 600px;
+        border: 1px solid #ccc;
+    }
+    .filter-option {
+        cursor: pointer;
+        color: gray;  /* 默认颜色 */
+        margin-right: 10px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    .filter-option.selected {
+        color: white;  /* 选中后的文字颜色 */
+        background-color: #4e73df;  /* 选中后的背景色 */
+    }
+
+    .filter-option:hover {
+        background-color: #f1f1f1;  /* 鼠标悬停效果 */
+    }
+    #node-info-table th {
+        text-align: center;
+        vertical-align: middle;
+        width: 25%;
+    }
+    #node-info-table td {
+        width: 75%;
+    }
+    #node-info-table {
+        border-collapse: collapse;  /* 合并表格边框 */
+        width: 100%;  /* 设置表格宽度 */
+    }
+
+    #node-info-table th, #node-info-table td {
+        border: 1px solid #a5abb6;  /* 添加边框 */
+        padding: 8px;  /* 添加内边距 */
+    }
+
+    #node-info-table th {
+        background-color: #f4f4f4;  /* 设置表头背景颜色 */
+    }
+</style>
+{% endblock %}
+
+{% block active %}
+<!-- 默认页 - 数据库概览 -->
+<li class="nav-item">
+    <a class="nav-link" href="home">
+        <!--i class="fas fa-fw fa-tachometer-alt"></i-->
+        <i class="fas fa-chart-area"></i>
+        <span>数据库概览</span></a>
+</li>
+
+<!-- 一条分割线 -->
+<hr class="sidebar-divider">
+
+<!-- 标题 -->
+<div class="sidebar-heading">
+    系统功能
+</div>
+
+<!-- 每日推荐模块 -->
+<li class="nav-item">
+    <a class="nav-link" href="recommend">
+        <i class="fas fa-random"></i>
+        <span>每日推荐</span>
+    </a>
+</li>
+
+<!-- 镜头查询模块 -->
+<li class="nav-item">
+    <a class="nav-link" href="search">
+        <i class="fas fa-search"></i>
+        <span>镜头查询</span>
+    </a>
+</li>
+
+<!-- 问答功能模块 -->
+<li class="nav-item">
+    <a class="nav-link" href="qa">
+        <i class="fas fa-question"></i>
+        <span>问答功能</span>
+    </a>
+</li>
+
+<!-- 一条分割线 -->
+<hr class="sidebar-divider">
+
+<!-- 其他 -->
+<div class="sidebar-heading">
+    其他
+</div>
+
+<!-- 给开发留一个页面 -->
+<li class="nav-item">
+    <a class="nav-link" href="debug">
+        <i class="fas fa-tools debug-icon"></i>
+        <span>页面开发</span>
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- 页面标题 -->
+    <h1 class="h3 mb-4 text-gray-800">开发页</h1>
+    <!--input type="button" value="发送数据" onclick="btnSendData()"-->
+    <!-- 用于显示返回的数据 -->
+    <!--div id="response-container">
+        <p id="received-name">Name: </p>
+        <p id="received-password">Password: </p>
+    </div-->
+    <!--div id="cy"></div-->
+    <!--div>
+        <p>选择相机卡口</p>
+        <button onclick="filterData('mount', '1')" id="K">K卡口</button>
+        <button onclick="filterData('mount', '2')" id="M">M卡口</button>
+        <button onclick="filterData('mount', '3')" id="A">A卡口</button>
+        <button onclick="filterData('mount', '4')" id="F">F卡口</button>
+        <button onclick="filterData('mount', '5')" id="FA">FA卡口</button>
+        <button onclick="filterData('mount', '6')" id="D FA">D FA卡口</button>
+        <button onclick="filterData('mount', '7')" id="DA">DA卡口</button>
+        <button onclick="filterData('mount', '8')" id="M42 Screwmount">M42螺纹卡口</button>
+        <button onclick="filterData('mount', '9')" id="645">645卡口</button>
+        <button onclick="filterData('mount', '10')" id="67">67卡口</button>
+        <button onclick="filterData('mount', '11')" id="M37 Screwmount">M37螺纹卡口</button>
+        <button onclick="filterData('mount', '12')" id="Auto 110">Auto 110卡口</button>
+        <button onclick="filterData('mount', '13')" id="Q">Q卡口</button>
+    </div>
+    <div>
+        <p>选择相机焦段</p>
+        <button onclick="filterData('focalLength', '1')" id="Extreme Wide-Angle">超广角镜头</button>
+        <button onclick="filterData('focalLength', '2')" id="Wide-Angle">广角镜头</button>
+        <button onclick="filterData('focalLength', '3')" id="Normal">标准镜头</button>
+        <button onclick="filterData('focalLength', '4')" id="Telephoto">长焦镜头</button>
+        <button onclick="filterData('focalLength', '5')" id="Extreme Telephoto">超长焦镜头</button>
+        <button onclick="filterData('focalLength', '6')" id="Zoom">变焦镜头</button>
+    </div-->
+
+    
+    <div>
+        <p>选择相机卡口</p>
+        <span class="filter-option" onclick="filterData('mount', '1')" id="mount-1">K卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '2')" id="mount-2">M卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '3')" id="mount-3">A卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '4')" id="mount-4">F卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '5')" id="mount-5">FA卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '6')" id="mount-6">D FA卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '7')" id="mount-7">DA卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '8')" id="mount-8">M42螺纹卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '9')" id="mount-9">645卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '10')" id="mount-10">67卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '11')" id="mount-11">M37螺纹卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '12')" id="mount-12">Auto 110卡口</span>
+        <span class="filter-option" onclick="filterData('mount', '13')" id="mount-13">Q卡口</span>
+    </div>
+    <div>
+        <p>选择相机焦段</p>
+        <span class="filter-option" onclick="filterData('focalLength', '1')" id="focal-1">超广角镜头</span>
+        <span class="filter-option" onclick="filterData('focalLength', '2')" id="focal-2">广角镜头</span>
+        <span class="filter-option" onclick="filterData('focalLength', '3')" id="focal-3">标准镜头</span>
+        <span class="filter-option" onclick="filterData('focalLength', '4')" id="focal-4">长焦镜头</span>
+        <span class="filter-option" onclick="filterData('focalLength', '5')" id="focal-5">超长焦镜头</span>
+        <span class="filter-option" onclick="filterData('focalLength', '6')" id="focal-6">变焦镜头</span>    
+    </div>
+
+    <div style="display: flex; align-items: flex-start;">
+        <div id="chart" style="width: 800px; height: 600px;"></div>
+        <div id="node-info" style="margin-left: 20px;">
+            <table id="node-info-table">
+    
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<!--script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js" defer></script>
+<script type="text/javascript" defer>
+    function btnSendData() {
+        var input = {
+            'name': 'tom',
+            'password': '123456'
+        };
+        $.ajax({
+            url: '/devSend',
+            type: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify(input),
+            success: function (res) {
+                console.log(res);
+
+                // 更新页面上的元素
+                $('#received-name').append(' ' + res.name);
+                $('#received-password').append(' ' + res.password);
+
+            }
+        });
+    }
+</script-->
+<!--script>
+    // 加载图数据并初始化 Cytoscape
+    fetch('/graph_data')
+        .then(response => response.json())
+        .then(data => {
+            var cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: [
+                    // 转换前端图数据
+                    ...data.nodes.map(node => ({
+                        data: { id: node.id, label: node.label }
+                    })),
+                    ...data.edges.map(edge => ({
+                        data: { source: edge.source, target: edge.target, label: edge.label }
+                    }))
+                ],
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'content': 'data(label)',
+                            'background-color': '#66cc66',
+                            'text-valign': 'center',
+                            'color': 'white',
+                            'font-size': 10,
+                            'border-width': 2
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 2,
+                            'line-color': '#ccc',
+                            'target-arrow-color': '#ccc',
+                            'target-arrow-shape': 'triangle'
+                        }
+                    }
+                ],
+                layout: {
+                    name: 'cose',
+                    rows: 1
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching graph data:', error));
+</script-->
+<script type="text/javascript">
+
+    // 前端表单提交部分
+    let selectedMounts = [];
+    let selectedFocalLengths = [];
+    let nodeMap = {};
+
+    // 处理按钮点击事件
+    function filterData(type, value) {
+        if (type === 'mount') {
+            if (selectedMounts.includes(value)) {
+                selectedMounts = selectedMounts.filter(item => item !== value);
+                document.getElementById('mount-' + value).classList.remove('selected');
+            } else {
+                selectedMounts.push(value);
+                document.getElementById('mount-' + value).classList.add('selected');
+            }
+        } else if (type === 'focalLength') {
+            if (selectedFocalLengths.includes(value)) {
+                selectedFocalLengths = selectedFocalLengths.filter(item => item !== value);
+                document.getElementById('focal-' + value).classList.remove('selected');
+            } else {
+                selectedFocalLengths.push(value);
+                document.getElementById('focal-' + value).classList.add('selected');
+            }
+        }
+        fetchData();
+    }
+
+    // 获取数据并更新图形
+    function fetchData() {
+        const requestData = {
+            mounts: selectedMounts,
+            focalLengths: selectedFocalLengths
+        };
+
+        // 加载图数据并初始化 ECharts
+        // 获取数据
+        fetch('/graph_data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json()) // 方法将 HTTP 响应的 JSON 数据解析为 JavaScript 对象。
+        .then(data => {
+            updateGraph(data);
+        })
+        .catch(error => console.error('Error fetching graph data:', error));
+    }
+
+    function updateGraph(data) {
+        // 此时接收到数据了，需要转换
+        // 转换图数据格式为 ECharts 需要的 format
+        var nodes = data.nodes.map(node => {
+            var nodeStyle = { color: '#a5abb6'};  // 默认颜色为灰色
+            if (node.type === 'lens') {
+                nodeStyle.color = '#66cc66';  // 镜头
+            } else if (node.type === 'focalLength') {
+                nodeStyle.color = '#4c8eda';  // 焦段
+            } else if (node.type === 'mount') {
+                nodeStyle.color = '#ffc454';  // 卡口
+            }
+
+            // 保存节点的完整数据
+            nodeMap[node.id] = {
+                id: node.id,
+                name: node.label,
+                type: node.type,
+                description: node.description,
+                sharpness: node.sharpness,          // 添加锐度
+                aberration: node.aberration,        // 添加像差
+                bokeh: node.bokeh,                  // 添加虚化效果
+                autofocus: node.autofocus,          // 添加自动对焦
+                handling: node.handling,            // 添加操控性
+                value: node.value,                  // 添加性价比
+                price: node.price,                  // 添加价格
+                rating: node.rating                 // 添加评分
+            };
+
+            return {
+                id: node.id,
+                name: node.label,  // 用节点的label作为显示名称
+                symbolSize: 40,  // 可以调整节点大小
+                itemStyle: nodeStyle,
+                draggable: true, //使节点可以拖动
+                label: {
+                    show: true,
+                    position: 'center', // 将标签显示在节点的圆心位置
+                    formatter: '{b}', // 显示节点的名称
+                    overflow: 'truncate', // 超出节点大小时显示省略号
+                    ellipsis: true, // 启用文本省略
+                    align: 'center', // 水平居中
+                    verticalAlign: 'middle', // 垂直居中
+                },
+            };
+        });
+
+        var links = data.edges.map(edge => ({
+            source: edge.source,
+            target: edge.target,
+            label: {
+                show: true,
+                formatter: edge.label  // 显示边的label
+            },
+            lineStyle: {
+                color: '#ccc',  // 设置边的颜色
+                width: 2
+            }
+        }));
+
+        // 初始化 ECharts 实例，引号里的chart就对应body里的chart标签
+        var chart = echarts.init(document.getElementById('chart'));
+
+        // 配置 ECharts 图表选项
+        var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}'
+            },
+            series: [{
+                type: 'graph',
+                layout: 'force',  // 强力导向布局
+                roam: true,  // 启用拖拽和平移功能
+                edgeSymbol: ['none', 'arrow'],
+                edgeSymbolSize: [4, 10],
+                data: nodes,  // 节点数据
+                links: links,  // 边数据
+                force: {
+                    repulsion: 300,  // 节点间的斥力
+                    gravity: 0.1,  // 引力
+                    edgeLength: [100, 300],  // 边的长度范围
+                    layoutAnimation: true,
+                },
+                lineStyle: {
+                    width: 2,
+                    color: '#ccc',
+                }
+            }]
+        };
+
+        // 设置并渲染图表
+        chart.setOption(option);
+
+        chart.off('click');
+        // 节点点击事件
+        chart.on('click', function(params) {
+            if (params.dataType === 'node') {
+                let nodeDetails = nodeMap[params.data.id];
+
+                // 先打印一个信息
+                console.log(nodeDetails)
+                // 高亮节点
+                // 清除所有节点的边框样式
+                let updatedNodes = nodes.map(node => {
+                    node.itemStyle = { ...node.itemStyle, borderColor: '', borderWidth: 0 };
+                    return node;
+                });
+
+                // 给当前点击的节点添加红色边框
+                updatedNodes = updatedNodes.map(node => {
+                    if (node.id === params.data.id) {
+                        node.itemStyle = { ...node.itemStyle, borderColor: '#e9b4cc', borderWidth: 3 };
+                    }
+                    return node;
+                });
+
+                // 更新图表的节点样式
+                chart.setOption({
+                    series: [{
+                        data: updatedNodes  // 更新节点样式
+                    }]
+                });
+
+                // 显示节点信息在右侧
+                displayNodeInfo(nodeDetails);
+            } else {
+                let updatedNodes = nodes.map(node => {
+                    // 清除所有节点的边框样式
+                    node.itemStyle = { ...node.itemStyle, borderColor: '', borderWidth: 0 };
+                    return node;
+                });
+
+                // 更新图表的节点样式
+                chart.setOption({
+                    series: [{
+                        data: updatedNodes
+                    }]
+                });
+
+                // 清空右侧信息表格
+                clearNodeInfo();
+            }
+        });
+    }
+
+    function displayNodeInfo(node) {
+        const table = document.getElementById('node-info-table');
+        
+        // 清空表格内容
+        table.innerHTML = '';
+
+        // 根据节点类型显示不同的信息
+        let htmlContent = '';
+        if (node.type === 'lens') {
+            htmlContent = `
+                <tr><th>镜头名称</th><td>${node.name}</td></tr>
+                <tr><th>锐度</th><td>${node.sharpness}</td></tr>
+                <tr><th>像差/畸变</th><td>${node.aberration}</td></tr>
+                <tr><th>散景/虚化</th><td>${node.bokeh}</td></tr>
+                <tr><th>自动对焦</th><td>${node.autofocus}</td></tr>
+                <tr><th>操控性</th><td>${node.handling}</td></tr>
+                <tr><th>性价比</th><td>${node.value}</td></tr>
+                <tr><th>价格</th><td>${node.price}</td></tr>
+                <tr><th>评分</th><td>${node.rating}</td></tr>
+                <tr><th>描述</th><td>${node.description}</td></tr>
+            `;
+        } else if (node.type === 'focalLength') {
+            htmlContent = `
+                <tr><th>焦段名称</th><td>${node.name}</td></tr>
+                <tr><th>焦段描述</th><td>${node.description}</td></tr>
+            `;
+        } else if (node.type === 'mount') {
+            htmlContent = `
+                <tr><th>卡口名称</th><td>${node.name}</td></tr>
+                <tr><th>卡口描述</th><td>${node.description}</td></tr>
+            `;
+        }
+
+        table.innerHTML = htmlContent;
+    }
+    // 清空右侧信息表格
+    function clearNodeInfo() {
+        const table = document.getElementById('node-info-table');
+        table.innerHTML = ''; // 清空表格内容
+    }
+</script>
+{% endblock %}
